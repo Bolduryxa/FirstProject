@@ -1,0 +1,6 @@
+if(){if(){if(){}}}
+
+if(){}
+if(x==1){for(int i=0;i<size;i++){x++;}}
+
+if(){}else{}

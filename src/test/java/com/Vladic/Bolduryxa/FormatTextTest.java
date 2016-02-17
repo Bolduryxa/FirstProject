@@ -1,16 +1,53 @@
 package com.Vladic.Bolduryxa;
 
-import com.Vladic.Bolduryxa.Stream.*;
-import com.Vladic.Bolduryxa.Stream.I_OutputText;
-import com.Vladic.Bolduryxa.Stream.I_InputText;
+import com.Vladic.Bolduryxa.NewImplementation.Formatter.Formatter;
+import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Properties;
+
 import static org.junit.Assert.*;
 
-/**
- * Created by Vladiclav on 31.10.2015.
- */
 public class FormatTextTest {
 
+    private static Properties config;
+    private static Formatter formatter;
+
+    @BeforeClass
+    public static void initConfiguration(){
+        config = new Properties();
+        config.setProperty("InterfaceInputStream", "com.Vladic.Bolduryxa.StringInputStreamStub");
+        config.setProperty("InterfaceInputStream.countArguments", "1");
+        config.setProperty("InterfaceInputStream.argument1", "");
+        config.setProperty("InterfaceOutputStream", "com.Vladic.Bolduryxa.StringOutputStreamStub");
+        formatter = new Formatter( config);
+    }
+
+    @Test
+    public void testDeleteDoubleSpace(){
+        config.setProperty("InterfaceInputStream.argument1", "if  (  ){  }");
+        config.setProperty("InterfaceHandlersCount", "1");
+        config.setProperty("InterfaceHandler1", "com.Vladic.Bolduryxa.NewImplementation.Handlers.DeleteDoubleSpace");
+        formatter.initProperties( config);
+        formatter.execute();
+        assertEquals( StringOutputStreamStub.result, "if ( ){ }");
+    }
+    @Test
+    public void testLeftParenthesis() {
+        config.setProperty("InterfaceInputStream.argument1", "if(){ }");
+        config.setProperty("InterfaceHandlersCount", "2");
+        config.setProperty("InterfaceHandler2", "com.Vladic.Bolduryxa.NewImplementation.Handlers.LeftParenthesis");
+        formatter.initProperties( config);
+        formatter.execute();
+        assertEquals( StringOutputStreamStub.result, "if (){ }");
+    }
+
+    }
+
+
+//тесты для консоли
+    /*
     @Test
     public void testNewlineAfterSemicolon() throws FormatterException {
         I_InputText in = new StringInputText( "public static int main( String argv[]){System.out.println();return 0;}");
@@ -45,6 +82,5 @@ public class FormatTextTest {
         formater.format();
 
         assertEquals( " {\n", out.toString());
-    }
+    }*/
 
-}
