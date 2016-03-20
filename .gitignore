@@ -1,1 +1,8 @@
 /target
+.idea/
+FirstProject.iml
+formater.log
+hs_err_pid3256.log
+hs_err_pid3836.log
+logging.log
+replay_pid3256.log
