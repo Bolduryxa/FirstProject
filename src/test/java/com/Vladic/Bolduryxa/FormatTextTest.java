@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class FormatTextTest {
 
-    private static Properties config;
+    /*private static Properties config;
     private static Formatter formatter;
 
     @BeforeClass
@@ -41,7 +41,7 @@ public class FormatTextTest {
         formatter.initProperties( config);
         formatter.execute();
         assertEquals( StringOutputStreamStub.result, "if (){ }");
-    }
+    }*/
 
     }
 

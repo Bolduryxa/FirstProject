@@ -1,0 +1,5 @@
+   |     inFor     |     general        |
+---+---------------+--------------------+
+ { |  syntaxError  |  LeftBraceHandler  |
+ } |  syntaxError  |  RightBraceHandler |
+---+---------------+--------------------+

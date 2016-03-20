@@ -1,31 +1,34 @@
 package com.Vladic.Bolduryxa.NewImplementation.Formatter;
 
 
-import com.Vladic.Bolduryxa.NewImplementation.Exception.InputStreamException;
-import com.Vladic.Bolduryxa.NewImplementation.Exception.OutputStreamException;
 import com.Vladic.Bolduryxa.NewImplementation.FactoryMethod.HandlerFactory;
-import com.Vladic.Bolduryxa.NewImplementation.FactoryMethod.InputStreamFactory;
-import com.Vladic.Bolduryxa.NewImplementation.FactoryMethod.OFactoryException;
-import com.Vladic.Bolduryxa.NewImplementation.FactoryMethod.OutputStreamFactory;
 import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_Handler;
-import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
-import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
-import com.Vladic.Bolduryxa.Stream.IO_Exception;
+import com.Vladic.Bolduryxa.NewImplementation.State.State;
 import org.apache.log4j.Logger;
 
-
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Formatter {
 
     private static final Logger logger = Logger.getLogger(Formatter.class);
+    private ReentrantReadWriteLock lock;
+    private Lock writeLock;
+    private Lock readLock;
+    private HandlerFactory handlerFactory;
+    private Map<String,Map<String,String>> stateObjc;
+    private  Map<String,String> handlers;
+    /*
     private I_InputStream inputStream;
     private I_OutputStream outputStream;
     private I_Handler [] iHandlers;
     private Boolean isFirst;{
         isFirst=true;
-    }
 
+    }*/
+/*
     public void initProperties(Properties properties){
         if ( isFirst){
             isFirst = false;
@@ -35,13 +38,29 @@ public class Formatter {
         initInterfaceInputStream( properties);
         initInterfaceOutputStream( properties);
         initInterfaceHandlers( properties);
+    }*/
+
+    public Formatter( Map<String,Map<State,I_Handler>> map) {
+        lock = new ReentrantReadWriteLock();
+        writeLock = lock.writeLock();//все берет потоки
+        readLock = lock.readLock();// берет один поток
+        handlerFactory = new HandlerFactory();
+        stateObjc = new HashMap<>();
+        handlers = new HashMap<>();
+        initialization( map);
+
     }
 
-    public Formatter(Properties properties){
-        initProperties(properties);
+    private void initialization(Map<String, Map<State, I_Handler>> map) {
+        writeLock.lock();
+        handlers.clear();
+//        for ()
+
     }
 
-    public void execute() {
+
+
+    /*public void execute() {
         logger.info( "Formatter starting");
         boolean exit;
         char inputChar;
@@ -62,9 +81,9 @@ public class Formatter {
             throw new FormatterException( "IO Exception", e);
         }
         logger.info( "Formatting finished");
-    }
+    }*/
 
-    private void initInterfaceInputStream(Properties properties){
+  /*  private void initInterfaceInputStream(Properties properties){
         logger.info("InterfaceInputStream loading_");
         String classInterfaceInputStreamName = properties.getProperty("InterfaceInputStream");
         InputStreamFactory i_inputStreamFactory = new InputStreamFactory();
@@ -86,9 +105,9 @@ public class Formatter {
                 throw new FormatterException( "Error create InterfaceInputStream", e);
             }
         }
-    }
+    }*/
 
-    private void initInterfaceOutputStream( Properties properties){
+  /*  private void initInterfaceOutputStream( Properties properties){
         logger.info( "InterfaceOutputStream loading_");
         String classInterfaceOutputStreamName = properties.getProperty( "InterfaceOutputStream");
         OutputStreamFactory i_outputStreamFactory = new OutputStreamFactory();
@@ -111,8 +130,8 @@ public class Formatter {
             }
         }
     }
-
-    private void initInterfaceHandlers( Properties properties) {
+*/
+   /* private void initInterfaceHandlers( Properties properties) {
         logger.info( "InterfaceHandlers loading_");
         int countHandlers;
         try{
@@ -146,10 +165,10 @@ public class Formatter {
             }
         }
         logger.info( countHandlers + "loaded handlers");
-    }
+    }*/
 
 
-    private void close() {
+   /* private void close() {
         try {
             inputStream.close();
         } catch (InputStreamException e) {
@@ -161,7 +180,7 @@ public class Formatter {
             throw new FormatterException(ex);
         }
 
-    }
+    }*/
 
 
 }
