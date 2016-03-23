@@ -6,36 +6,13 @@ import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
 
 public class LeftBrace implements I_Handler {
 
-    private Boolean isPreviousSpace;{
-        isPreviousSpace = false;
-    }
+   private String space ="    ";
 
 
     @Override
-    public boolean execute(char inputChar, I_OutputStream outputStream) {
+    public String execute(String input) {
 
-        int variable;
-        try {
-            variable =1/(inputChar-'{');
-            try {
-                variable =1/(inputChar-' ');
-                isPreviousSpace = false;
-            } catch (ArithmeticException e) {
-                isPreviousSpace = true;
-                return false;
-            }
 
-        } catch (ArithmeticException e) {
-            try{
-                variable = 1/isPreviousSpace.compareTo( new Boolean( "false"));
-                outputStream.write( '{');
-            }catch( ArithmeticException ex){
-                outputStream.write( ' ');
-                outputStream.write( '{');
-            }
-            isPreviousSpace = false;
-            return true;
-        }
-        return false;
+        return " {\n"+space;
     }
 }

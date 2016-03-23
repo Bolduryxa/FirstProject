@@ -3,9 +3,9 @@ package com.Vladic.Bolduryxa.NewImplementation.Handlers;
 import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_Handler;
 import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
 
-public class TransferLine implements I_Handler {
+public class TransferLine  {
 
-    private Boolean isPreviousSpace;
+  /*  private Boolean isPreviousSpace;
 
     {
         isPreviousSpace = false;
@@ -53,5 +53,5 @@ public class TransferLine implements I_Handler {
         return false;
 
 
-        }
+        }*/
 }

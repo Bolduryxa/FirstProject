@@ -4,6 +4,7 @@ import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
 import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
 import com.sun.org.apache.xml.internal.utils.StringBufferPool;
 
+/*
 public class StringOutputStreamStub implements I_OutputStream {
 
     public static String result;
@@ -24,3 +25,4 @@ public class StringOutputStreamStub implements I_OutputStream {
     public void close() {
     }
 }
+*/

@@ -18,5 +18,5 @@ public interface I_Handler {
 
 
 
-    public boolean execute( char inputChar, I_OutputStream outputStream);
+    String execute( String input);
 }

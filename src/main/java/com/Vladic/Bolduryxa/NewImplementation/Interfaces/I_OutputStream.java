@@ -12,5 +12,6 @@ import com.Vladic.Bolduryxa.NewImplementation.Exception.OutputStreamException;
  */
 public interface I_OutputStream {
     public void write(char changeChar);
+    public void write(String output);
     public void close();
 }

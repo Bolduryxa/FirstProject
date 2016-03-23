@@ -18,7 +18,7 @@ public class ConfigurationHandlers {
 
     public String getParametr( String key1, String key2){
         Map<String, String> line = table.get( key1);
-        if( line != null){
+        if ( line != null) {
             return line.get( key2);
         }
         return null;

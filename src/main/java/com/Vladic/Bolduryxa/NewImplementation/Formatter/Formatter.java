@@ -1,15 +1,21 @@
 package com.Vladic.Bolduryxa.NewImplementation.Formatter;
 
 
+import com.Vladic.Bolduryxa.NewImplementation.Exception.HandlerFactoryException;
 import com.Vladic.Bolduryxa.NewImplementation.FactoryMethod.HandlerFactory;
 import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_Handler;
+import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
+import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
 import com.Vladic.Bolduryxa.NewImplementation.State.State;
+import com.Vladic.Bolduryxa.NewImplementation.configurationhandlers.ConfigurationHandlers;
+import com.Vladic.Bolduryxa.NewImplementation.tokenizer.Tokenizer;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Handler;
 
 public class Formatter {
 
@@ -18,169 +24,106 @@ public class Formatter {
     private Lock writeLock;
     private Lock readLock;
     private HandlerFactory handlerFactory;
-    private Map<String,Map<String,String>> stateObjc;
-    private  Map<String,String> handlers;
-    /*
-    private I_InputStream inputStream;
-    private I_OutputStream outputStream;
-    private I_Handler [] iHandlers;
-    private Boolean isFirst;{
-        isFirst=true;
+    private  Map<String,I_Handler> handlers;
+    private Map<String, I_Handler> containerObjects;
+    private String state;
+    private ConfigurationHandlers configurationHandlers;
 
-    }*/
-/*
-    public void initProperties(Properties properties){
-        if ( isFirst){
-            isFirst = false;
-        }else{
-            close();
-        }
-        initInterfaceInputStream( properties);
-        initInterfaceOutputStream( properties);
-        initInterfaceHandlers( properties);
-    }*/
 
-    public Formatter( Map<String,Map<State,I_Handler>> map) {
+    public Formatter(Properties confighandlers, ConfigurationHandlers configTableHandlers)  {
         lock = new ReentrantReadWriteLock();
         writeLock = lock.writeLock();//все берет потоки
         readLock = lock.readLock();// берет один поток
         handlerFactory = new HandlerFactory();
-        stateObjc = new HashMap<>();
         handlers = new HashMap<>();
-        initialization( map);
+        containerObjects = new HashMap<>();
+        initialization(confighandlers,configTableHandlers);
+
+    }
+ public void execute(I_InputStream inputstream, I_OutputStream outputstream, Tokenizer tokenizer) {
+     readLock.lock();//никакой поток не блокировался на запись,идем дальше+иначе ждем пока закончится запись
+     logger.info( "Formatter starting");
+     String output = null;
+     while( inputstream.hasNext()) {
+         String token = tokenizer.nextToken( inputstream);
+
+         I_Handler handler = handlers.get(configurationHandlers.getParametr(token,state));
+         if( handler == null){
+             output = token;
+         } else {
+             output = handler.execute(state);
+         }
+         outputstream.write( output);
+     }
+     logger.info( "Formatting finished");
+     readLock.unlock();
 
     }
 
-    private void initialization(Map<String, Map<State, I_Handler>> map) {
+
+    private void initialization(Properties confighandlers, ConfigurationHandlers configTableHandlers) {
         writeLock.lock();
+        this.configurationHandlers = configTableHandlers;
         handlers.clear();
-//        for ()
+        state = "general";
+        for ( String handlerName : confighandlers.stringPropertyNames()) {
+            I_Handler handler = getHandler(confighandlers,handlerName);
+            handlers.put(handlerName, handler);
+        }
+        writeLock.unlock();
 
     }
+    public I_Handler getHandler(Properties confighandlers,String handlerName) {
 
-
-
-    /*public void execute() {
-        logger.info( "Formatter starting");
-        boolean exit;
-        char inputChar;
-        int variable;
-        try {
-            while (inputStream.hasNext()) {
-                exit = false;
-                inputChar = inputStream.read();
-                for (int i = 0; i < iHandlers.length && !exit; ++i)
-                    exit = iHandlers[i].execute(inputChar, outputStream);
-                try {
-                    variable = (char) (1 / new Boolean(exit).compareTo(Boolean.valueOf("false")));
-                } catch (ArithmeticException e) {
-                    outputStream.write(inputChar);
-                }
-            }
-        }catch ( InputStreamException | OutputStreamException e){
-            throw new FormatterException( "IO Exception", e);
+        I_Handler handler =  containerObjects.get( handlerName);
+        if( handler == null) {
+            handler = loadHandler( confighandlers, handlerName);
+            containerObjects.put( handlerName, handler);
         }
-        logger.info( "Formatting finished");
-    }*/
-
-  /*  private void initInterfaceInputStream(Properties properties){
-        logger.info("InterfaceInputStream loading_");
-        String classInterfaceInputStreamName = properties.getProperty("InterfaceInputStream");
-        InputStreamFactory i_inputStreamFactory = new InputStreamFactory();
-        try {
-            int countArguments = Integer.valueOf(properties.getProperty("InterfaceInputStream.countArguments"));
-            String[] argvInterfaceInputStream = new String[countArguments];
-            for( int i=0; i<countArguments; ++i)
-                argvInterfaceInputStream[i] = properties.getProperty( "InterfaceInputStream.argument" + (i+1));
-            try{
-                inputStream = i_inputStreamFactory.getInterfaceInputStream( classInterfaceInputStreamName, argvInterfaceInputStream);
-                logger.info( "InterfaceInputStream loaded.");
-            }catch ( OFactoryException e){
-                throw new FormatterException( "Error create InterfaceInputStream", e);
-            }
-        }catch ( NumberFormatException | NegativeArraySizeException ex){
-            try{
-                inputStream = i_inputStreamFactory.getInterfaceInputStream( classInterfaceInputStreamName);
-            }catch ( OFactoryException e){
-                throw new FormatterException( "Error create InterfaceInputStream", e);
-            }
-        }
-    }*/
-
-  /*  private void initInterfaceOutputStream( Properties properties){
-        logger.info( "InterfaceOutputStream loading_");
-        String classInterfaceOutputStreamName = properties.getProperty( "InterfaceOutputStream");
-        OutputStreamFactory i_outputStreamFactory = new OutputStreamFactory();
-        try {
-            int countArguments = Integer.valueOf(properties.getProperty("InterfaceOutputStream.countArguments"));
-            String[] argvInterfaceOutputStream = new String[countArguments];
-            for( int i=0; i<countArguments; ++i)
-                argvInterfaceOutputStream[i] = properties.getProperty( "InterfaceOutputStream.argument" + (i+1));
-            try{
-                outputStream = i_outputStreamFactory.getInterfaceOutputStream( classInterfaceOutputStreamName, argvInterfaceOutputStream);
-                logger.info( "InterfaceOutputStream loaded.");
-            }catch ( OFactoryException e){
-                throw new FormatterException( "Error create InterfaceOutputStream", e);
-            }
-        }catch ( NumberFormatException | NegativeArraySizeException exception){
-            try{
-                outputStream = i_outputStreamFactory.getInterfaceOutputStream( classInterfaceOutputStreamName);
-            }catch ( OFactoryException e){
-                throw new FormatterException( "Error create InterfaceOutputStream", e);
-            }
-        }
+        return handler;
     }
-*/
-   /* private void initInterfaceHandlers( Properties properties) {
-        logger.info( "InterfaceHandlers loading_");
-        int countHandlers;
+    private I_Handler loadHandler( Properties confighandlers, String handlerName) {
+        logger.debug(String.format("Loading handler '%s'", handlerName));
+        Object[] argv = getArgumentsHandler( confighandlers, handlerName);
         try{
-            countHandlers = Integer.valueOf( properties.getProperty( "InterfaceHandlersCount"));
-        }catch ( NumberFormatException exception) {
-            countHandlers = 0;
-        }catch (NegativeArraySizeException exception){
-            throw new FormatterException( "Error  create handlers", exception);
+            I_Handler handler = handlerFactory.getObject( confighandlers.getProperty( handlerName), argv);
+            logger.info(String.format ("Loaded handler '%s'", handlerName));
+            return handler;
+        } catch ( HandlerFactoryException ex){
+            logger.error(String.format ("Can't loaded handler '%s'", handlerName));
+            throw new FormatterException( ex);
         }
-
-        iHandlers = new I_Handler[countHandlers];
-        HandlerFactory i_handlerFactory = new HandlerFactory();
-        for( int i=0; i<countHandlers; ++i) {
-            String handlerName = properties.getProperty( "InterfaceHandler"+(i+1));
-            try{
-                int countArguments = Integer.valueOf(properties.getProperty(handlerName+".countArguments"));
-                String[] argvInterfaceHandlers = new String[countArguments];
-                for( int j=0; j<countArguments; ++j)
-                    argvInterfaceHandlers[j] = properties.getProperty( handlerName+".argument."+(j+1));
-                try{
-                    iHandlers[i] = i_handlerFactory.getInterfaceHandler( handlerName, argvInterfaceHandlers);
-                }catch( OFactoryException e){
-                    throw new FormatterException( "Error  create InterfaceHandler", e);
-                }
-            }catch ( NumberFormatException | NegativeArraySizeException exception){
-                try{
-                    iHandlers[i] = i_handlerFactory.getInterfaceHandler( handlerName);
-                }catch( OFactoryException e){
-                    throw new FormatterException( "Error create InterfaceHandler", e);
+    }
+    private Object[] getArgumentsHandler(Properties confighandlers, String handlerName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( handlerName).append( '.');
+        String startHandlerArgumentName = stringBuilder.toString();
+        String endsHandlerArgumentName = ".type";
+        List<Object> list = new ArrayList<>();
+        for( String argv: confighandlers.stringPropertyNames()) {
+            if( argv.startsWith( startHandlerArgumentName)){
+                if( argv.endsWith( endsHandlerArgumentName)) continue;
+                String value = confighandlers.getProperty( argv);
+                stringBuilder.delete( 0, stringBuilder.length());
+                stringBuilder.append( argv).append( endsHandlerArgumentName);
+                switch ( confighandlers.getProperty( stringBuilder.toString())){
+                    case "Integer":
+                        list.add( Integer.valueOf( value));
+                        break;
+                    case "String":
+                    default:
+                        list.add( value);
+                        break;
                 }
             }
         }
-        logger.info( countHandlers + "loaded handlers");
-    }*/
+        return list.toArray();
+    }
 
 
-   /* private void close() {
-        try {
-            inputStream.close();
-        } catch (InputStreamException e) {
-            throw new FormatterException(e);
-        }
-            try {
-            outputStream.close();
-        } catch(OutputStreamException ex) {
-            throw new FormatterException(ex);
-        }
 
-    }*/
+
+
 
 
 }

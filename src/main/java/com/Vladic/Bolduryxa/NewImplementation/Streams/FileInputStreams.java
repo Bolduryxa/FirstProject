@@ -13,8 +13,7 @@ import java.io.IOException;
  *  the file named by the path name <code>name</code>
  *  in the file system.
  *
- *  @param name the file name
- *  @exception IO_Exception Caused FileNotFoundException<br>
+ *  @exception FileInputStreams Caused FileNotFoundException<br>
  *              If the file does not exist, is a directory
  *              rather than a regular file, or for some
  *              other reason can not be opened for reading.

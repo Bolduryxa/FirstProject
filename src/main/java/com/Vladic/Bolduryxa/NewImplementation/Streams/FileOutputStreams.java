@@ -30,6 +30,14 @@ public class FileOutputStreams implements I_OutputStream {
             throw new OutputStreamException( "Write error", e);
         }
     }
+    public void write (String output) {
+        try {
+
+            outputStream.write( output.getBytes());
+        } catch (IOException e) {
+            throw new OutputStreamException( "Write error", e);
+        }
+    }
 
     public void close() {
         try {
