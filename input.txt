@@ -2,5 +2,25 @@ if(){if(){if(){}}}
 
 if(){}
 if(x==1){for(int i=0;i<size;i++){x++;}}
-
+void public specif();void set();
 if(){}else{}
+public void execute(final IInputStream inputstream, final IOutputStream outputstream, final TranslationOfCharacterInAString translationOfCharacterInAString, final Tokenizer tokenizer ){
+     //readLock.lock(); //никакой поток не блокировался на запись,идем дальше+иначе ждем пока закончится запись
+     logger.info("formatter starting");
+     String output = null;
+     state = "general";
+      while(inputstream.hasNext()){
+         String token = translationOfCharacterInAString.nextToken(inputstream);
+
+
+          token = tokenizer.searchHandlerForTheToken(token, isHandler);
+          if(isHandler.getIsHanler()){IHandler handler = handlers.get(configurationHandlers.getParameter(token, state));
+              if(handler == null){output = token;
+              }else{output = handler.execute(token);}
+              state = configurationNextHandlers.getParameter(token, state);
+              if(state == null) state = "general";
+              outputstream.write(output);
+              continue;}}
+     logger.info("Formatting finished");
+     //readLock.unlock();
+    }

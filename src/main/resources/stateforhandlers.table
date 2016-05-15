@@ -1,0 +1,21 @@
+|   Token    | inFor            |general            |
+-------------+------------------+-------------------+
+    {        |    error         | general           |
+    }        |    error         | general           |
+    (        |    inFor         | general           |
+    )        | general          | general           |
+    ;        | inFor            | general           |
+    !=       |    inFor         | general           |
+    ==       |    inFor         | general           |
+    >        |  inFor           | general           |
+    <        |  inFor           | general           |
+    >=       |   inFor          | general           |
+    <=       |  inFor           | general           |
+    ++       |  inFor           | general           |
+    -        | inFor            | general           |
+    &&       |  inFor           | general           |
+  | inFor    | general                              |
+    for      |  error           | inFor             |
+    define   |  inFor           | general           |
+
+

@@ -1,14 +1,16 @@
 package com.Vladic.Bolduryxa.NewImplementation;
 
-import com.Vladic.Bolduryxa.NewImplementation.Formatter.Formatter;
-import com.Vladic.Bolduryxa.NewImplementation.Formatter.FormatterException;
-import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
-import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_OutputStream;
-import com.Vladic.Bolduryxa.NewImplementation.Streams.FileInputStreams;
-import com.Vladic.Bolduryxa.NewImplementation.Streams.FileOutputStreams;
+import com.Vladic.Bolduryxa.NewImplementation.Closeable.Closeable;
 import com.Vladic.Bolduryxa.NewImplementation.configurationhandlers.ConfigurationHandlers;
-import com.Vladic.Bolduryxa.NewImplementation.tokenizer.Tokenizer;
-import org.apache.log4j.Logger;
+import com.Vladic.Bolduryxa.NewImplementation.facadlogger.Facad;
+import com.Vladic.Bolduryxa.NewImplementation.facadlogger.IFacad;
+import com.Vladic.Bolduryxa.NewImplementation.fileinputstreams.FileInputStreams;
+import com.Vladic.Bolduryxa.NewImplementation.fileinputstreams.IInputStream;
+import com.Vladic.Bolduryxa.NewImplementation.fileoutputstreams.FileOutputStreams;
+import com.Vladic.Bolduryxa.NewImplementation.fileoutputstreams.IOutputStream;
+import com.Vladic.Bolduryxa.NewImplementation.formatter.Formatter;
+import com.Vladic.Bolduryxa.NewImplementation.formatter.FormatterException;
+import com.Vladic.Bolduryxa.NewImplementation.tokenaizer.Tokenizer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,18 +18,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Main {
-    private  static final  Logger logger = Logger.getLogger(Main.class);
-    //private  static final  IFacad logger = Facad.getLogger(Main.class);
+    private  static final IFacad logger = Facad.getLogger(Main.class);
 
     Formatter formatter;
     private Tokenizer tokenizer;
-    private void loadProperties (Properties properties, String  filename ) {
-
+    private void loadProperties(final Properties properties, final String  filename) {
         InputStream inputStream = null;
         try {
-            inputStream = Main.class.getClassLoader().getResourceAsStream( filename);
+            inputStream = Main.class.getClassLoader().getResourceAsStream(filename);
 
-            properties.load( inputStream);
+            properties.load(inputStream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -38,49 +38,67 @@ public class Main {
             } catch (IOException e) {
                 e.printStackTrace();
 
-                //logger.error( "File not found '{}'", filename);// not look filename
-                logger.error( String.format("File not found '%s'", filename));
-                System.exit( 1 );
+
+                logger.error(String.format("File not found '%s'", filename));
+                System.exit(1);
             }
         }
     }
-    public Main (String[] argv) {
 
-        Properties confighandlers = new Properties();
+    /**
+     *
+     * @param argv 'argv'
+     */
+    public Main(final  String[] argv) {
+
+        Properties configHandlers = new Properties();
+
         InputStream configurationStateFileName = Main.class.getClassLoader().getResourceAsStream("ConfigState.table");
+        InputStream configurationNextState = Main.class.getClassLoader().getResourceAsStream("stateforhandlers.table");
+
         String handlersFileName = "handlers.properties";
+        IInputStream handlersForTokens = new FileInputStreams("handlersForTokens.txt");
         ConfigurationHandlers configTableHandlers = new ConfigurationHandlers();
+        ConfigurationHandlers configTableNextHandlers = new ConfigurationHandlers();
         configTableHandlers.load(configurationStateFileName);
-        loadProperties(confighandlers,handlersFileName);
-
-        tokenizer = new Tokenizer();
+        configTableNextHandlers.load(configurationNextState);
+        loadProperties(configHandlers, handlersFileName);
+        tokenizer = new Tokenizer(handlersForTokens);
         try {
-            formatter = new Formatter( confighandlers,configTableHandlers );
+            formatter = new Formatter(configHandlers, configTableHandlers, configTableNextHandlers);
 
-        } catch ( FormatterException e){
-            logger.error( e.getMessage());
-            System.exit( 2);
+        } catch (FormatterException e){
+            logger.error(e.getMessage());
+            System.exit(2);
 
         }
 
     }
+
     public void start() {
         try {
-            I_InputStream inputStream = new FileInputStreams( "input.txt");
-            I_OutputStream outputStream = new FileOutputStreams( "output.txt");
-            formatter.execute(inputStream, outputStream,tokenizer);
-        }catch ( FormatterException e){
+            IInputStream inputStream = new FileInputStreams("input.txt");
+            IOutputStream outputStream = new FileOutputStreams("output.txt");
+            formatter.execute(inputStream, outputStream, tokenizer);
+            ((Closeable) inputStream).close();
+            ((Closeable) outputStream).close();
+        } catch (  Exception e){
             Throwable cause = e;
-            while( cause != null){
-                logger.error( cause.getMessage());
+            while (cause != null){
+                logger.error(cause.getMessage());
                 cause = cause.getCause();
             }
-            System.exit( 2);
+            System.exit(2);
         }
 
     }
-public static void main(String[] argv) {
-    new Main( argv).start();
+
+    /**
+     *
+     * @param argv 'argv'
+     */
+    public static void main(final String[] argv) {
+    new Main(argv).start();
 }
 }
 

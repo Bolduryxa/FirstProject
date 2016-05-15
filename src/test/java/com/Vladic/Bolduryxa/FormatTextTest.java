@@ -1,86 +1,185 @@
 package com.Vladic.Bolduryxa;
 
-import com.Vladic.Bolduryxa.NewImplementation.Formatter.Formatter;
-import com.Vladic.Bolduryxa.NewImplementation.Interfaces.I_InputStream;
+import com.Vladic.Bolduryxa.NewImplementation.configurationhandlers.ConfigurationHandlers;
+import com.Vladic.Bolduryxa.NewImplementation.fileinputstreams.IInputStream;
+import com.Vladic.Bolduryxa.NewImplementation.fileoutputstreams.IOutputStream;
+import com.Vladic.Bolduryxa.NewImplementation.formatter.Formatter;
+import com.Vladic.Bolduryxa.NewImplementation.stringoutputstreams.StringOutPutStreams;
+import com.Vladic.Bolduryxa.NewImplementation.strnginpustream.StringInputStream;
+import com.Vladic.Bolduryxa.NewImplementation.tokenaizer.Tokenizer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertEquals;
 
 public class FormatTextTest {
 
-    /*private static Properties config;
+    private static Properties config;
+    private static ConfigurationHandlers configTableHandlers;
+    private static ConfigurationHandlers configTableNextHandlers;
     private static Formatter formatter;
 
     @BeforeClass
-    public static void initConfiguration(){
+    public static void initConfiguration() throws IOException {
         config = new Properties();
-        config.setProperty("InterfaceInputStream", "com.Vladic.Bolduryxa.StringInputStreamStub");
-        config.setProperty("InterfaceInputStream.countArguments", "1");
-        config.setProperty("InterfaceInputStream.argument1", "");
-        config.setProperty("InterfaceOutputStream", "com.Vladic.Bolduryxa.StringOutputStreamStub");
-        formatter = new Formatter( config);
+        String conf = "Add = com.Vladic.Bolduryxa.NewImplementation.handlers.Add\n" +
+                "DeleteDoubleSpace = com.Vladic.Bolduryxa.NewImplementation.handlers.DeleteDoubleSpace\n" +
+                "Equal = com.Vladic.Bolduryxa.NewImplementation.handlers.Equal\n" +
+                "LeftBrace  = com.Vladic.Bolduryxa.NewImplementation.handlers.LeftBrace\n" +
+                "LeftParenthesis = com.Vladic.Bolduryxa.NewImplementation.handlers.LeftParenthesis\n" +
+                "Less = com.Vladic.Bolduryxa.NewImplementation.handlers.Less\n" +
+                "LessOrEqual = com.Vladic.Bolduryxa.NewImplementation.handlers.LessOrEqual\n" +
+                "More = com.Vladic.Bolduryxa.NewImplementation.handlers.More\n" +
+                "MoreOrEqual =com.Vladic.Bolduryxa.NewImplementation.handlers.MoreOrEqual\n" +
+                "NotEqual = com.Vladic.Bolduryxa.NewImplementation.handlers.NotEqual\n" +
+                "RightBrace = com.Vladic.Bolduryxa.NewImplementation.handlers.RightBrace\n" +
+                "RightParenthesis = com.Vladic.Bolduryxa.NewImplementation.handlers.RightParenthesis\n" +
+                "Semicolon = com.Vladic.Bolduryxa.NewImplementation.handlers.Semicolon\n" +
+                "Sub = com.Vladic.Bolduryxa.NewImplementation.handlers.Sub\n" +
+                "define = com.Vladic.Bolduryxa.NewImplementation.handlers.Define\n" +
+                "inForHandler =com.Vladic.Bolduryxa.NewImplementation.handlers.inForHandler\n" +
+                "LogicalAnd = com.Vladic.Bolduryxa.NewImplementation.handlers.LogicalAnd\n" +
+                "error = com.Vladic.Bolduryxa.NewImplementation.handlers.error\n";
+        config.load( new ByteArrayInputStream( conf.getBytes()));
+        configTableHandlers = new ConfigurationHandlers();
+        configTableNextHandlers = new ConfigurationHandlers();
+        String expected = "|   Token    | inFor            |general            |\n" +
+                "-------------+------------------+-------------------+\n" +
+                "    {        | error            | LeftBrace         |\n" +
+                "    }        | error            | RightBrace        |\n" +
+                "    (        | LeftParenthesis  |LeftParenthesis    |\n" +
+                "    )        | RightParenthesis |RightParenthesis   |\n" +
+                "    ;        | inForHandler     | Semicolon         |\n" +
+                "    !=       |  NotEqual        | NotEqual          |\n" +
+                "    ==       |  Equal           | Equal             |\n" +
+                "    >        |  More            | More              |\n" +
+                "    <        |  Less            | Less              |\n" +
+                "    >=       |  MoreOrEqual     | MoreOrEqual       |\n" +
+                "    <=       |  LessOrEqual     | LessOrEqual       |\n" +
+                "     ++      |  Add             | Add               |\n" +
+                "     -       | Sub              | Sub               |\n" +
+                "    &&       |  LogicalAnd      | LogicalAnd        |\n" +
+                " | DeleteDoubleSpace|DeleteDoubleSpace             |\n" +
+                "    for      |  error           | define            |\n" +
+                "  define     |  define          | define            |\n";
+        String expected1 = "|   Token    | inFor            |general            |\n" +
+                "-------------+------------------+-------------------+\n" +
+                "    {        |    error         | general           |\n" +
+                "    }        |    error         | general           |\n" +
+                "    (        |    inFor         | general           |\n" +
+                "    )        | general          | general           |\n" +
+                "    ;        | inFor            | general           |\n" +
+                "    !=       |    inFor         | general           |\n" +
+                "    ==       |    inFor         | general           |\n" +
+                "    >        |  inFor           | general           |\n" +
+                "    <        |  inFor           | general           |\n" +
+                "    >=       |   inFor          | general           |\n" +
+                "    <=       |  inFor           | general           |\n" +
+                "    ++       |  inFor           | general           |\n" +
+                "    -        | inFor            | general           |\n" +
+                "    &&       |  inFor           | general           |\n" +
+                " | inFor    | general                              |\n" +
+                "    for      |  error           | inFor             |\n" +
+                "    define   |  inFor           | general           |\n";
+
+        configTableHandlers.load( new ByteArrayInputStream( expected.getBytes()));
+        configTableNextHandlers.load(new ByteArrayInputStream(expected1.getBytes()));
+
+        formatter = new Formatter( config,configTableHandlers,configTableNextHandlers );
     }
 
-    @Test
+   /* @Test
     public void testDeleteDoubleSpace(){
-        config.setProperty("InterfaceInputStream.argument1", "if  (  ){  }");
-        config.setProperty("InterfaceHandlersCount", "1");
-        config.setProperty("InterfaceHandler1", "com.Vladic.Bolduryxa.NewImplementation.Handlers.DeleteDoubleSpace");
-        formatter.initProperties( config);
-        formatter.execute();
-        assertEquals( StringOutputStreamStub.result, "if ( ){ }");
-    }
-    @Test
-    public void testLeftParenthesis() {
-        config.setProperty("InterfaceInputStream.argument1", "if(){ }");
-        config.setProperty("InterfaceHandlersCount", "2");
-        config.setProperty("InterfaceHandler2", "com.Vladic.Bolduryxa.NewImplementation.Handlers.LeftParenthesis");
-        formatter.initProperties( config);
-        formatter.execute();
-        assertEquals( StringOutputStreamStub.result, "if (){ }");
+
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if    (    ) {  }";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals("if ( ) {\n" +
+                "    }" ,outputStream.toString());
     }*/
-
-    }
-
-
-//тесты для консоли
-    /*
-    @Test
-    public void testNewlineAfterSemicolon() throws FormatterException {
-        I_InputText in = new StringInputText( "public static int main( String argv[]){System.out.println();return 0;}");
-        I_OutputText out = new StringOutputText();
-        FormatText formater = new FormatText( in, out);
-        formater.format();
-
-        assertEquals( "public static int main( String argv[]) {\n    System.out.println() ;\n    return 0;\n}\n", out.toString());
-    }
    @Test
-    public void testFormattingIf () throws FormatterException {
-        I_InputText in = new StringInputText( "if(){}");
-        I_OutputText out = new StringOutputText();
-        FormatText formater = new FormatText( in, out);
-        formater.format();
+   public void testRightParenthesis(){
 
-        assertEquals( "if () {\n}\n", out.toString());
+       IOutputStream outputStream = new StringOutPutStreams();
+       String string = "if()";
+       IInputStream inputStream = new StringInputStream(string);
+       Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+       formatter.execute(inputStream,outputStream,tokenizer);
+       assertEquals( "if () ",outputStream.toString() );
+   }
+    @Test
+    public void testLeftBrace(){
+
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if(){}";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if () {\n" +
+                "    }\n",outputStream.toString() );
     }
     @Test
-    public void testFormattingIfelse () throws FormatterException {
-        I_InputText in = new StringInputText( "if(){}else{}");
-        I_OutputText out = new StringOutputText();
-        FormatText formater = new FormatText( in, out);
-        formater.format();
+    public void testMore(){
 
-        assertEquals( "if () {\n}\nelse {\n}\n", out.toString());
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if(x>1){}";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if (x > 1) {\n" +
+                "    }\n",outputStream.toString() );
     }
-    public void testNewLineAfterOpenParenthesis() throws FormatterException {
-        I_InputText in = new StringInputText( "{");
-        I_OutputText out = new StringOutputText();
-        FormatText formater = new FormatText( in, out);
-        formater.format();
+    @Test
+    public void testNotEqual(){
 
-        assertEquals( " {\n", out.toString());
-    }*/
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if(x!=1){}";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if (x != 1) {\n" +
+                "    }\n",outputStream.toString() );
+    }
+
+    @Test
+    public void testLeftParenthesis(){
+
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if()";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if () ",outputStream.toString() );
+    }
+    @Test
+    public void testLogicalAnd(){
+
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if(x==1&&y==1)";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if (x == 1 && y == 1) ",outputStream.toString() );
+    }
+    @Test
+    public void testAdd(){
+
+        IOutputStream outputStream = new StringOutPutStreams();
+        String string = "if(x==1){for(int i=0;i<size;i++){x++;}}";
+        IInputStream inputStream = new StringInputStream(string);
+        Tokenizer tokenizer = new Tokenizer(new StringInputStream( "\"{\", \"}\", \"(\", \"==\", \")\", \"for\", \">\", \"<\", \"&&\", \"!=\", \"<=\", \">=\", \"++\", \"--\", \" \""));
+        formatter.execute(inputStream,outputStream,tokenizer);
+        assertEquals( "if (x == 1) {\n" +
+                "    for (int i=0; i < size; i++ ) {\n" +
+                "    x++ ;\n" +
+                "}\n" +
+                "}\n", outputStream.toString() );
+    }
+    }
 

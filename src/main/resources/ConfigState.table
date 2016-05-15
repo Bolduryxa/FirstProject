@@ -1,4 +1,19 @@
-   Token     |     general        |
-------------------+---------------+
-    {        |  LeftBrace         |
-    }        |  RightBrace        |
+|   Token    | inFor            |general            |
+-------------+------------------+-------------------+
+    {        | error            | LeftBrace         |
+    }        | error            | RightBrace        |
+    (        | LeftParenthesis  |LeftParenthesis    |
+    )        | RightParenthesis |RightParenthesis   |
+    ;        | inForHandler     | Semicolon         |
+    !=       |  NotEqual        | NotEqual          |
+    ==       |  Equal           | Equal             |
+    >        |  More            | More              |
+    <        |  Less            | Less              |
+    >=       |  MoreOrEqual     | MoreOrEqual       |
+    <=       |  LessOrEqual     | LessOrEqual       |
+    &&       |  LogicalAnd      |LogicalAnd         |
+     ++      |  Add             | Add               |
+     -       | Sub              | Sub               |
+  | DeleteDoubleSpace|DeleteDoubleSpace             |
+    for      |  error           | define            |
+  define     |  define          | define            |

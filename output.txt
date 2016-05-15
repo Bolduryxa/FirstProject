@@ -1,21 +1,70 @@
-if() {
-    if() {
-    if() {
+if () {
+    if () {
+    if () {
     }
 }
 }
 
 
-if() {
+if () {
     }
 
-if(x==1) {
-    for(int i=0;i<size;i++) {
-    x++;}
+if (x == 1) {
+    for (int i=0; i < size; i++) {
+    x++;
+}
 }
 
+void public specif () ;
+void set () ;
 
-if() {
+if () {
     }
-else {
+else{
     }
+
+public void execute (final IInputStream inputstream, final IOutputStream outputstream, final TranslationOfCharacterInAString translationOfCharacterInAString, final Tokenizer tokenizer ) {
+    
+     //readLock.lock () ;
+ //Ð½Ð¸ÐºÐ°ÐºÐ¾Ð¹ Ð¿Ð¾ÑÐ¾Ðº Ð½Ðµ Ð±Ð»Ð¾ÐºÐ¸ÑÐ¾Ð²Ð°Ð»ÑÑ Ð½Ð° Ð·Ð°Ð¿Ð¸ÑÑ,Ð¸Ð´ÐµÐ¼ Ð´Ð°Ð»ÑÑÐµ+Ð¸Ð½Ð°ÑÐµ Ð¶Ð´ÐµÐ¼ Ð¿Ð¾ÐºÐ° Ð·Ð°ÐºÐ¾Ð½ÑÐ¸ÑÑÑ Ð·Ð°Ð¿Ð¸ÑÑ
+     logger.info ("formatter starting") ;
+
+     String output = null;
+
+     state = "general";
+
+      while (inputstream.hasNext () ) {
+    
+         String token = translationOfCharacterInAString.nextToken (inputstream) ;
+
+
+
+          token = tokenizer.searchHandlerForTheToken (token, isHandler) ;
+
+          if (isHandler.getIsHanler () ) {
+    IHandler handler = handlers.get (configurationHandlers.getParameter (token, state) ) ;
+
+              if (handler  ==  null) {
+    output = token;
+
+              }
+else{
+    output = handler.execute (token) ;
+}
+
+              state = configurationNextHandlers.getParameter (token, state) ;
+
+              if (state  ==  null)  state = "general";
+
+              outputstream.write (output) ;
+
+              continue;
+}
+}
+
+     logger.info ("Formatting finished") ;
+
+     //readLock.unlock () ;
+
+   }
+ 
