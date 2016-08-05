@@ -1,0 +1,28 @@
+{
+  "services":[
+    {
+      "name":"Математика",
+      "estimatedTime": 60,
+      "price": 1000,
+      "selected": true
+    },
+    {
+      "name":"Русский язык",
+      "estimatedTime": 60,
+      "price": 1000,
+      "selected": true
+    },
+    {
+      "name":"Китайский язык",
+      "estimatedTime": 60,
+      "price": 1000,
+      "selected":true
+    },
+    {
+      "name": "Физика",
+      "estimatedTime": 60,
+      "price": 2000,
+      "selected": true
+    }
+  ]
+}
