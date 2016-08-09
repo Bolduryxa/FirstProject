@@ -1,1 +1,10 @@
-{"services":[{"name":"Химия","estimatedTime": 60,"price": 1000,"selected": true}]}
+{
+  "services":[
+    {
+      "name":"Химия",
+      "estimatedTime": 60,
+      "price": 1000,
+      "selected": true
+      
+    }]
+}
